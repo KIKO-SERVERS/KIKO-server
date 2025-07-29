@@ -1,0 +1,22 @@
+version: '4.20'
+
+services:
+  server:
+    container_name: mobile-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - DB_HOST=database
+    links:
+      - database
+
+  database:
+    container_name: kiko-database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
