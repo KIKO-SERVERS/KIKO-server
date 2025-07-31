@@ -12,6 +12,8 @@ services:
       - DB_HOST=database
     links:
       - database
+    env_file:
+      - .env
 
   database:
     container_name: kiko-database
@@ -20,3 +22,5 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
+    env_file:
+      - .env
