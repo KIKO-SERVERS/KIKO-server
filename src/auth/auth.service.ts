@@ -29,11 +29,37 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { sub: user.id, email: user.email };
-    const access = this.jwtService.sign(payload, { expiresIn: '15m' });
-    const refresh = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
+    return this.createTokenPair(payload);
+  }
+
+  generateAccessToken(payload: { sub: number; email: string }) {
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '15m',
+    });
+  }
+
+  generateRefreshToken(payload: { sub: number; email: string }) {
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
       expiresIn: '7d',
     });
-    return { access_token: access, refresh_token: refresh };
+  }
+
+  createTokenPair(payload: { sub: number; email: string }) {
+    return {
+      access_token: this.generateAccessToken(payload),
+      refresh_token: this.generateRefreshToken(payload),
+    };
+  }
+
+  async validateRefreshToken(token: string) {
+    try {
+      return this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 }
